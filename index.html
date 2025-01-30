@@ -4,7 +4,158 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TheBGMinecraft</title>
-    <link rel="stylesheet" href="https://github.com/RandomTechrate/TheBGMInecraft/blob/main/style.css">
+    <style>
+        body {
+            background: linear-gradient(to bottom, black, #2d004d);
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+            z-index: 1; /* Ensuring text is on top */
+            position: relative;
+        }
+        .container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .server-info {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            animation: glow 2s infinite alternate;
+        }
+        @keyframes glow {
+            from { box-shadow: 0 0 10px rgba(255, 255, 255, 0.3); }
+            to { box-shadow: 0 0 20px rgba(255, 255, 255, 0.7); }
+        }
+        .news, .sidebar-content {
+            margin-top: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+        .content {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .news {
+            flex: 2;
+            background: rgba(50, 0, 80, 0.9);
+            padding: 15px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+        .news.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .btn {
+            background: #6200ea;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+        .btn:hover {
+            background: #9b00ff;
+            transform: scale(1.1);
+        }
+        .sidebar {
+            position: fixed;
+            left: -250px;
+            top: 0;
+            width: 250px;
+            height: 100%;
+            background: #320050;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+            transition: left 0.3s ease, box-shadow 0.3s ease;
+            z-index: 2; /* Ensuring sidebar is above other elements */
+            user-select: none; /* Preventing text selection */
+        }
+        .sidebar.open {
+            left: 0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.7); /* Adding shadow effect when open */
+        }
+        .sidebar-content h2 {
+            margin-top: 0;
+        }
+        .toggle-btn {
+            position: absolute;
+            left: 250px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #9b00ff;
+            color: white;
+            padding: 10px;
+            border-radius: 0 5px 5px 0;
+            cursor: grab;
+            font-size: 1.5em;
+            transition: left 0.3s ease;
+        }
+        .toggle-btn:hover {
+            background: #6200ea;
+        }
+        .sidebar.open .toggle-btn {
+            left: 250px;
+            transform: rotate(180deg);
+        }
+        .discord-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin-top: 30px;
+        }
+        .discord-logo {
+            width: 150px;
+            height: auto;
+            animation: fadeIn 2s ease-in-out forwards;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        .join-link {
+            margin-top: 20px;
+            color: #9b00ff;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .join-link .emoji {
+            font-size: 2em;
+        }
+        .discord-icon {
+            width: 60px;
+            height: auto;
+            margin-top: 10px;
+            transition: transform 0.3s ease-in-out;
+        }
+        .discord-icon:hover {
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 10px #fff);
+            animation: thunderEffect 1s infinite;
+        }
+        @keyframes thunderEffect {
+            0%, 100% { filter: brightness(100%); }
+            50% { filter: brightness(150%); }
+        }
+    </style>
 </head>
 <body>
     <div class="sidebar">
@@ -45,6 +196,50 @@
             </div>
         </div>
     </div>
-    <script src="script.js"></script>
-</body>
-</html>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const container = document.querySelector('.container');
+            const news = document.querySelector('.news');
+            const sidebar = document.querySelector('.sidebar');
+            const toggleBtn = document.getElementById('toggle-btn');
+
+            // Function to show elements with animation
+            function showElements() {
+                container.classList.add('show');
+                news.classList.add('show');
+            }
+
+            // Delay the animation to give a smooth effect
+            setTimeout(showElements, 500);
+
+            function createStar() {
+                let star = document.createElement("div");
+                star.classList.add("falling-star");
+                star.style.left = Math.random() * 100 + "vw";
+                star.style.animationDuration = Math.random() * 3 + 2 + "s";
+                document.body.appendChild(star);
+
+                setTimeout(() => { star.remove(); }, 5000);
+            }
+
+            setInterval(createStar, 300);
+
+            // Drag sidebar functionality (horizontal only)
+            toggleBtn.addEventListener('mousedown', function(e) {
+                let startX = e.clientX;
+                document.body.style.cursor = 'grabbing';
+
+                function onMouseMove(e) {
+                    let moveX = e.clientX - startX;
+                    let newLeft = Math.min(0, -250 + moveX);
+                    newLeft = Math.max(newLeft, -250);
+                    sidebar.style.left = `${newLeft}px`;
+                }
+
+                function onMouseUp() {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                    document.body.style.cursor = 'default';
+
+                    if (parseInt(sidebar.style.left, 10) < -125) {
+                        sidebar
